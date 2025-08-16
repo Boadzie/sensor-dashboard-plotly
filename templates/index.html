@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-4 max-w-7xl ">
+    <!-- Header with gradient goodness -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+        <div>
+            <h1
+                class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+                Sensor Dashboard
+            </h1>
+            <p class="text-base-content/70 text-lg">Real-time environmental monitoring with Plotly Python</p>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="stats bg-base-100 shadow-lg">
+                <div class="stat">
+                    <div class="stat-title text-xs">Status</div>
+                    <div class="stat-value text-lg" id="connection-status">Connecting...</div>
+                    <div class="stat-desc">
+                        <div class="loading loading-ring loading-sm" id="connection-indicator"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live sensor data -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body py-4">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="badge badge-primary">Live</div>
+                <h2 class="card-title">Current Readings</h2>
+            </div>
+
+            <!-- HTMX SSE connection for live data -->
+            <div hx-ext="sse" sse-connect="/stream">
+                <div id="sensor-display" sse-swap="sensor_update" hx-get="/sensor-data" hx-trigger="sse:sensor_update">
+                    <div class="flex items-center justify-center py-6">
+                        <div class="loading loading-spinner loading-lg text-primary"></div>
+                        <span class="ml-4">Connecting to sensors...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
+        <!-- Main time series chart -->
+        <div class="xl:col-span-2">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body py-2 pb-0">
+                    <h3 class="card-title mb-2">Multi-Metric Time Series</h3>
+                    <div id="timeseries-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status distribution -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body py-2">
+                <h3 class="card-title mb-2">Status Distribution</h3>
+                <div id="status-chart"></div>
+            </div>
+        </div>
+
+        <!-- Correlation matrix -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body py-4">
+                <h3 class="card-title mb-2">Sensor Correlations</h3>
+                <div id="correlation-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anomaly detection -->
+    <div class="card bg-base-100 shadow-xl mb-4">
+        <div class="card-body py-2">
+            <h3 class="card-title mb-2">Anomaly Detection</h3>
+            <div id="anomaly-chart"></div>
+        </div>
+    </div>
+
+    <!-- Charts updater -->
+    <div hx-get="/charts" hx-trigger="load, every 1s" hx-target="#chart-updates" hx-swap="innerHTML">
+        <div id="chart-updates"></div>
+    </div>
+</div>
+
+<script>
+    // Handle SSE connection status
+    document.body.addEventListener('htmx:sseOpen', function (e) {
+        document.getElementById('connection-indicator').className = 'loading loading-ring loading-sm text-success';
+        document.getElementById('connection-status').textContent = 'Connected';
+    });
+
+    document.body.addEventListener('htmx:sseError', function (e) {
+        document.getElementById('connection-indicator').className = 'loading loading-ring loading-sm text-error';
+        document.getElementById('connection-status').textContent = 'Disconnected';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% if data %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="stat bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg">
+        <div class="stat-title text-blue-700">Temperature</div>
+        <div class="stat-value text-blue-900">{{ "%.1f"|format(data.temperature) }}°C</div>
+        <div class="stat-desc text-blue-600">Real-time reading</div>
+    </div>
+
+    <div class="stat bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-lg">
+        <div class="stat-title text-green-700">Humidity</div>
+        <div class="stat-value text-green-900">{{ "%.1f"|format(data.humidity) }}%</div>
+        <div class="stat-desc text-green-600">Relative humidity</div>
+    </div>
+
+    <div class="stat bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-lg">
+        <div class="stat-title text-purple-700">Pressure</div>
+        <div class="stat-value text-purple-900">{{ "%.1f"|format(data.pressure) }}</div>
+        <div class="stat-desc text-purple-600">hPa</div>
+    </div>
+
+    <div class="stat bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-lg">
+        <div class="stat-title text-gray-700">Status</div>
+        <div class="stat-value text-sm">
+            {% set status_colors = {
+            'normal': 'badge-success',
+            'warning': 'badge-warning',
+            'critical': 'badge-error'
+            } %}
+            <div class="badge {{ status_colors.get(data.status, 'badge-neutral') }} text-white font-bold">
+                {{ data.status.upper() }}
+            </div>
+        </div>
+        <div class="stat-desc text-gray-600">{{ data.timestamp.split('T')[1].split('.')[0] }}</div>
+    </div>
+</div>
+
+{% if data.status == 'critical' %}
+<div class="alert alert-error mb-4 animate-pulse">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 animate-bounce" fill="none"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="animate-pulse"><strong>🚨 Critical Alert:</strong> Environmental conditions outside normal
+        range!</span>
+</div>
+
+<style>
+    @keyframes slideInOut {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        10% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        90% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .alert-error {
+        animation: slideInOut 4s ease-in-out infinite;
+    }
+</style>
+{% endif %}
+
+{% else %}
+<div class="alert alert-warning">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
+    </svg>
+    <span>No sensor data available</span>
+</div>
+{% endif %}

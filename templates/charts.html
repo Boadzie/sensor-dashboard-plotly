@@ -1,0 +1,52 @@
+<!-- Render charts in hidden divs, then move to containers -->
+{% if charts.timeseries %}
+<div id="timeseries-update" style="display: none;">
+    {{ charts.timeseries | safe }}
+</div>
+<script>
+    const timeseriesUpdate = document.getElementById('timeseries-update');
+    const timeseriesChart = document.getElementById('timeseries-chart');
+    if (timeseriesUpdate && timeseriesChart) {
+        timeseriesChart.innerHTML = timeseriesUpdate.innerHTML;
+    }
+</script>
+{% endif %}
+
+{% if charts.status %}
+<div id="status-update" style="display: none;">
+    {{ charts.status | safe }}
+</div>
+<script>
+    const statusUpdate = document.getElementById('status-update');
+    const statusChart = document.getElementById('status-chart');
+    if (statusUpdate && statusChart) {
+        statusChart.innerHTML = statusUpdate.innerHTML;
+    }
+</script>
+{% endif %}
+
+{% if charts.correlation %}
+<div id="correlation-update" style="display: none;">
+    {{ charts.correlation | safe }}
+</div>
+<script>
+    const correlationUpdate = document.getElementById('correlation-update');
+    const correlationChart = document.getElementById('correlation-chart');
+    if (correlationUpdate && correlationChart) {
+        correlationChart.innerHTML = correlationUpdate.innerHTML;
+    }
+</script>
+{% endif %}
+
+{% if charts.anomalies %}
+<div id="anomalies-update" style="display: none;">
+    {{ charts.anomalies | safe }}
+</div>
+<script>
+    const anomaliesUpdate = document.getElementById('anomalies-update');
+    const anomalyChart = document.getElementById('anomaly-chart');
+    if (anomaliesUpdate && anomalyChart) {
+        anomalyChart.innerHTML = anomaliesUpdate.innerHTML;
+    }
+</script>
+{% endif %}
